@@ -19,7 +19,7 @@ func main() {
 		DialTimeout: 5 * time.Second,
 	})
 	if err != nil {
-		log.Fatal(err) //see how to add custom log messages later
+		log.Fatal("Error initializing client:\n", err) //see how to add custom log messages later
 	}
 	defer cli.Close()
 
@@ -28,7 +28,7 @@ func main() {
 		case "put":
 			err = Put(cli, args[2], args[3])
 			if err != nil {
-				log.Fatal(err)
+				log.Fatal("Put operation failed:\n", err)
 			}
 		case "get":
 			value := Get(cli, args[2])
@@ -40,15 +40,17 @@ func main() {
 		case "delete":
 			err := Delete(cli, args[2])
 			if err != nil {
-				log.Fatal(err)
+				log.Fatal("Delete operation failed:\n", err)
 				break
 			}
 		case "list":
-			//TODO: add option to list all keys? as switch case?
-			err := listEndpoints(cli)
-			if err != nil {
-				log.Fatal(err)
-				break
+			switch args[2] {
+			case "endpoints":
+				err := listEndpoints(cli)
+				if err != nil {
+					log.Fatal(err)
+					break
+				}
 			}
 		default:
 			fmt.Println("error")
@@ -57,15 +59,10 @@ func main() {
 	} else {
 		fmt.Println("Help")
 	}
-
-	// err = listEndpoints(cli)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 }
 
 func Get(cli *clientv3.Client, key string) *clientv3.GetResponse {
-	value, err := cli.Get(context.Background(), key) //what is Get(type OpResponse) and OpGet(type Op)
+	value, err := cli.Get(context.Background(), key)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -93,7 +90,7 @@ func Delete(cli *clientv3.Client, key string) error {
 	} else {
 		fmt.Println("Key not found. No action performed")
 	}
-	// todo: log at normal
+	// TODO: log at normal
 	return nil
 }
 
