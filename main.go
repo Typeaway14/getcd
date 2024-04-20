@@ -6,7 +6,6 @@ import (
 	"go.etcd.io/etcd/client/v3"
 	"log"
 	"os"
-	// "strings"
 	"time"
 )
 
@@ -50,7 +49,19 @@ func main() {
 
 		}
 	} else {
-		fmt.Println("Help")
+		fmt.Println(`
+NAME:
+	getcd - A minimal client for etcd written in Go
+
+USAGE:
+	getcd [COMMAND] {KEY} {VALUE}
+
+COMMANDS:
+	get 		Gets the key or a range of keys
+	put 		Puts the given key into the store
+	list 		Lists all the endpoints 
+	txn 		Txn processes all the requests in one transaction
+	`)
 	}
 }
 
