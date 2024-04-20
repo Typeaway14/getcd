@@ -3,12 +3,11 @@ package main
 import (
 	"context" //ask Navin anna
 	"fmt"
+	"go.etcd.io/etcd/client/v3"
 	"log"
 	"os"
+	// "strings"
 	"time"
-
-	"go.etcd.io/etcd/client/v3"
-	"google.golang.org/genproto/googleapis/api/error_reason"
 )
 
 func main() {
@@ -24,38 +23,85 @@ func main() {
 	}
 	defer cli.Close()
 
-	// _, err = cli.Put(context.Background(), "rinku", "tingupingu")
+	if len(args) >= 2 {
+		switch args[1] {
+		case "put":
+			err = Put(cli, args[2], args[3])
+			if err != nil {
+				log.Fatal(err)
+			}
+		case "get":
+			value := Get(cli, args[2])
+			if value == nil {
+				log.Fatal("Get returned empty. Possibly key doesnt exist")
+				break
+			}
+			fmt.Println(string(value.Kvs[0].Value))
+		case "delete":
+			err := Delete(cli, args[2])
+			if err != nil {
+				log.Fatal(err)
+				break
+			}
+		case "list":
+			//TODO: add option to list all keys? as switch case?
+			err := listEndpoints(cli)
+			if err != nil {
+				log.Fatal(err)
+				break
+			}
+		default:
+			fmt.Println("error")
+
+		}
+	} else {
+		fmt.Println("Help")
+	}
+
+	// err = listEndpoints(cli)
 	// if err != nil {
-	// 	log.Fatal(err) //custom message esketit
+	// 	log.Fatal(err)
 	// }
-	fmt.Println("Put operation completed successfully!")
-	
-	//TODO: switch case type tings
+}
 
-	err = Put(cli, args)
+func Get(cli *clientv3.Client, key string) *clientv3.GetResponse {
+	value, err := cli.Get(context.Background(), key) //what is Get(type OpResponse) and OpGet(type Op)
 	if err != nil {
-		log.Fatal(err) //custom message esketit x2
+		log.Fatal(err)
 	}
+	// TODO: log at normal
+	return value
 }
 
-func Put(cli *clientv3.Client,args) error {
-	_,err := cli.Put(context.Background(), key, value)
-	if err != nil{
+func Put(cli *clientv3.Client, key string, value string) error {
+	_, err := cli.Put(context.Background(), key, value)
+	if err != nil {
 		return err
 	}
-	fmt.Println("Put Operation completed successfully!")
-	// TODO: log at normal 
-	return nil
-}
-
-func Delete(cli *clientv3.Client, args) error
-{
-	_, err := cli.Delete(context.Background(),key)
-	if err != nil{
-		return err
-	}
-	fmt.Println("Delete operation completed successfully!")
+	fmt.Printf("Put key:%s with value:%s successfully!", key, value)
 	// TODO: log at normal
 	return nil
 }
 
+func Delete(cli *clientv3.Client, key string) error {
+	response, err := cli.Delete(context.Background(), key)
+	if err != nil {
+		return err
+	}
+	if response.Deleted == 1 {
+		fmt.Println("Delete operation completed successfully!")
+	} else {
+		fmt.Println("Key not found. No action performed")
+	}
+	// todo: log at normal
+	return nil
+}
+
+func listEndpoints(cli *clientv3.Client) error {
+
+	endpoints := cli.Endpoints()
+	fmt.Println("Endpoints: \n", endpoints)
+	return nil
+}
+
+//TODO:Implement a transaction?
