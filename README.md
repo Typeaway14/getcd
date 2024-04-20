@@ -3,7 +3,10 @@ Simple client written in Go to interact with etcd. Created as a mini-project for
 
 ## Setup
 This project uses Golang, ensure you have Go installed. 
-Refer [here](https://go.dev/doc/install) on how to do so
+etcd also needs to be installed. etcd version 3.5.12 was used.
+
+[Installing Golang](https://go.dev/doc/install) 
+[Installing etcd](https://etcd.io/docs/v3.5/install/)
 
 1. Clone this repo
 ```
