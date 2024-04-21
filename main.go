@@ -60,7 +60,6 @@ COMMANDS:
 	get 		Gets the key or a range of keys
 	put 		Puts the given key into the store
 	list 		Lists all the endpoints 
-	txn 		Txn processes all the requests in one transaction
 	`)
 	}
 }
@@ -116,5 +115,3 @@ func listEndpoints(cli *clientv3.Client) error {
 	fmt.Println("Endpoints: \n", endpoints)
 	return nil
 }
-
-//TODO:Implement a transaction?

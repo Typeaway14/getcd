@@ -15,6 +15,7 @@ git clone https://github.com/Typeaway14/getcd.git
 2. Run the build.sh executable
 ```
 chmod +x build.sh
+./build.sh
 ```
 3. Run the newly created executable 
 ```
